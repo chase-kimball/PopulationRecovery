@@ -25,10 +25,7 @@ class PopEstimator():
     fprior: Defaults to flat. This is pi(f(lambda)) in eqs 4 and 10. of https://arxiv.org/pdf/0912.5531
     "should include any a priori astrophysical understanding"
 
-    Fitting algorithm is Metropolis Hastings
-
-    posterior instances: an array of posterior instances. Each event posterior can have any
-    number of data points, but they need to be over the same number of parameters
+    MCMC algorithm is Metropolis Hastings
 
     """
     def __init__(self,fgenerator, nparams, posteriors, fprior = lambda x: 1.):
