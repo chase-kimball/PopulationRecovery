@@ -2,22 +2,25 @@ import numpy as np
 from scipy import stats
 import recoverPop
 import matplotlib.pyplot as plt
-def fgen(params):
-
-    return stats.norm(params[0],params[1]).pdf
+import pdb
+def fpop(x,params):
+    
+    return np.exp(-((x-params[0])**2)/(2*(params[1]**2)))/(np.sqrt(2*np.pi)*params[1])
 
 mu_o = .4
 sig_o = .1
-f_o = stats.norm(.4,.1)
+f_o = stats.norm(mu_o,sig_o)
 
 eventPosteriors = []
-k_events = 40
+k_events = 20
 N_points = 100
 for k in range(k_events):
-    sig = np.random.uniform(0,.2)
-    mu = f_o.rvs()
+    sig = np.random.uniform(0,.2)#np.random.uniform(0,.2)
+    mu=0
+    while mu<=0 or mu>1:
+        mu=f_o.rvs()
 
-    print mu
+    #print mu
 
     fk = stats.norm(mu,sig)
     data=[]
@@ -28,12 +31,14 @@ for k in range(k_events):
             data.append(x)
             ii+=1
     eventPosteriors.append(recoverPop.Posterior(data))
-
-mc = recoverPop.PopEstimator(fgen,2,eventPosteriors)
-mc.MCMC([[0,1],[0,.5]],[np.random.uniform(0,1.),np.random.uniform(0,.5)],NumTrials=200000)
+    
+mc = recoverPop.PopEstimator(fpop,2,eventPosteriors)
+mc.MCMC([[0,1],[.01,.5]],[np.random.uniform(0,1.),np.random.uniform(0.01,.5)],NumTrials=100000)
 mu,sig = mc.param_dists
 
-plt.hist(mc.param_dists[0])
+n,bins,patches=plt.hist(mc.param_dists[0])
+print np.argmax(n)
+
 plt.show()
 plt.hist(mc.param_dists[1])
 plt.show()
